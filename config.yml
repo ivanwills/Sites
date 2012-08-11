@@ -21,3 +21,5 @@ engines:
      start_tag: '[%'
      end_tag:   '%]'
 
+SiteDB:
+    connect: dbi:SQLite:dbname=sites.db

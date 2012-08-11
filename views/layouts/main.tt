@@ -16,6 +16,15 @@
 
 </head>
 <body>
+    <!-- BootStrap NavBar -->
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="brand" href="[% request.uri_base %]">Sites</a>
+            </div>
+        </div>
+    </div>
+
 
 [% content %]
 

@@ -1,100 +1,154 @@
-<!-- BootStrap NavBar -->
-<div class="navbar">
-  <div class="navbar-inner">
-    <div class="container">
-	<h3><a class="brand" href="[% request.uri_base %]"><img src="images/dancer_man.png"> Perl Dancer</a></h3>
-    </div>
-  </div>
-</div>
-
-
-
 <!-- Main content -->
 
 
 <!-- HEADER line -->
 <div class="container">
 
-<div class="page-header">
-	<div class="row">
-		<div class="span12">
-			<h1>Dancer Template, now with more cowbell</h1>
-		</div>
-	</div>
+<div class="row">
+    <div class="span12">
+        <table>
+            <thead>
+                <tr>
+                    <th>Project</th>
+                [%- project_groups = 0 -%]
+                [%- envs = {} -%]
+                [%- WHILE ( env = params.env.next ) -%]
+                    [%- project_groups = project_groups + 1;
+                        env_id = env.environment_id;
+                        envs.$env_id = project_groups;
+                    %]
+                    <th class="env_[% env.environment_id %]">[% env.label || env.environment %]</th>
+                [%- END %]
+                </tr>
+            </thead>
+            <tbody>
+        [%-
+            current = {
+                any            => undef,
+                project_group  => undef,
+                project        => undef,
+                environment    => undef,
+            };
+        -%]
+        [%- WHILE ( link = params.links.next ) -%]
+            [%- IF link.get_column('project_group') != current.project_group -%]
+                [%- IF current.any -%]
+                    </td>
+                </tr>
+                [%- END %]
+                <tr class="project-group">
+                    <td colspan="[% project_groups + 1 %]">[% link.get_column('project_group') %]</td>
+                </tr>
+                [%- current.project_group = link.get_column('project_group') -%]
+            [%- END -%]
+            [%- IF link.get_column('project') != current.project %]
+                [%- IF current.any %]
+                    </td>
+                </tr>
+                [%- END %]
+                <tr>
+                    <td class="project">[% link.get_column('project') %]</td>
+                [%- current.project     = link.get_column('project') -%]
+                [%- current.any         = 1                          -%]
+                [%- current.any_env     = undef                      -%]
+                [%- current.environment = undef                      -%]
+            [%- END -%]
+            [%- IF link.get_column('environment') != current.environment -%]
+                [%- IF current.any_env %]
+                    </td>
+                [%- END %]
+                [%-
+                    cur_env     = current.environment;
+                    cur_env_pos = envs.$cur_env || 0;
+                    new_env     = link.get_column('environment');
+                    new_env_pos = envs.$new_env || 0;
+                %]
+                [%- WHILE ( cur_env_pos + 1 < new_env_pos ) -%]
+                    [%- cur_env_pos = cur_env_pos + 1 %]
+                    <td>&nbsp;</td>
+                [%- END %]
+                    <td>
+                [%- current.environment = link.get_column('environment') -%]
+                [%- current.any_env     = 1                              -%]
+            [%- END %]
+                        [<a class="env_[% current.environment %]" href="[% link.url %]">[% link.label %]</a>]
+        [%- END %]
+            </tbody>
+        </table>
+    </div>
 </div>
 
-
 <div class="row">
-	<div class="span4">
-		<h2><i class="icon-twitter-sign icon-large"></i> Twitter Bootstrap</h2>
-		<p>
-		Twitter's <a target="_blank" href="http://twitter.github.com/bootstrap/index.html">bootstrap</a> is a simple and flexible HTML, CSS, and Javascript for popular user interface components and interactions.
-		</p>
-		<p>
-		This <b>Dancer</b> template is pre-configured to use bootstrap, and contains a script to easily upgrade to the latest bootstrap version.
-		</p>
-	</div>
+    <div class="span4">
+        <h2><i class="icon-twitter-sign icon-large"></i> Twitter Bootstrap</h2>
+        <p>
+        Twitter's <a target="_blank" href="http://twitter.github.com/bootstrap/index.html">bootstrap</a> is a simple and flexible HTML, CSS, and Javascript for popular user interface components and interactions.
+        </p>
+        <p>
+        This <b>Dancer</b> template is pre-configured to use bootstrap, and contains a script to easily upgrade to the latest bootstrap version.
+        </p>
+    </div>
 
-	<div class="span4">
-		<h2><i class="icon-flag icon-large"></i> Font-Awesome</h2>
-		<p>
-		Fort-Awesome's <a target="_blank" href="http://fortawesome.github.com/Font-Awesome/">Font-Awesome</a> is an iconic font designed for use with Twitter Bootstrap (overriding bootstrap's default "glyphicons" set).
-		</p>
-		<p>
-		This <b>Dancer</b> template is pre-configured to use Font-Awesome, and contains a script to easily upgrade to the latest Font-Awesome version.
-		</p>
-	</div>
+    <div class="span4">
+        <h2><i class="icon-flag icon-large"></i> Font-Awesome</h2>
+        <p>
+        Fort-Awesome's <a target="_blank" href="http://fortawesome.github.com/Font-Awesome/">Font-Awesome</a> is an iconic font designed for use with Twitter Bootstrap (overriding bootstrap's default "glyphicons" set).
+        </p>
+        <p>
+        This <b>Dancer</b> template is pre-configured to use Font-Awesome, and contains a script to easily upgrade to the latest Font-Awesome version.
+        </p>
+    </div>
 
-	<div class="span4">
-		<h2><i class="icon-cogs icon-large"></i> JQuery-1.7.2</h2>
-		<p>
-		<a target="_blank" href="http://jquery.com/">jQuery</a> is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development.
-		</p>
-		<p>
-		Dancer always used JQuery by default, so there's nothing really new here, except upgrading to 1.7.2 (and not using CDN).
-		</p>
-	</div>
+    <div class="span4">
+        <h2><i class="icon-cogs icon-large"></i> JQuery-1.7.2</h2>
+        <p>
+        <a target="_blank" href="http://jquery.com/">jQuery</a> is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development.
+        </p>
+        <p>
+        Dancer always used JQuery by default, so there's nothing really new here, except upgrading to 1.7.2 (and not using CDN).
+        </p>
+    </div>
 </div>
 
 <div class="row">
-	<div class="span4">
-		<h2><i class="icon-random icon-large"></i> Template::Toolkit</h2>
-		<p>
-		<a target="_blank" href="http://template-toolkit.org/">Template::Toolkit</a> is a fast, flexible and highly extensible template processing system.
-		</p>
-		<p>
-		Dancer always worked with Template::Toolkit, so there's nothing really new here, except:
-		<ul>
-			<li>Dancer's default template was <a href="https://metacpan.org/module/Template::Simple" target="_blank">Template::Simple</a>, and in this template it's changed to the more powerful Template::Toolkit.</li>
-			<li>Dancer's default tags were <span class="label">&lt;%</span> and <span class="label">%&gt;</span>,<br/>and in this template there are changed to <span class="label">[&#37;</span> and <span class="label">&#37;]</span>,
-		</ul>
+    <div class="span4">
+        <h2><i class="icon-random icon-large"></i> Template::Toolkit</h2>
+        <p>
+        <a target="_blank" href="http://template-toolkit.org/">Template::Toolkit</a> is a fast, flexible and highly extensible template processing system.
+        </p>
+        <p>
+        Dancer always worked with Template::Toolkit, so there's nothing really new here, except:
+        <ul>
+            <li>Dancer's default template was <a href="https://metacpan.org/module/Template::Simple" target="_blank">Template::Simple</a>, and in this template it's changed to the more powerful Template::Toolkit.</li>
+            <li>Dancer's default tags were <span class="label">&lt;%</span> and <span class="label">%&gt;</span>,<br/>and in this template there are changed to <span class="label">[&#37;</span> and <span class="label">&#37;]</span>,
+        </ul>
 
-		</p>
+        </p>
 
-	</div>
+    </div>
 
-	<div class="span4">
-		<h2><i class="icon-music icon-large"></i> Dancer inside</h2>
-		<a href="http://perldancer.org" target="_blank">What more could you ask for?
-		<br/>
-		<img src="images/dancer_star.png">
-		</a>
-	</div>
+    <div class="span4">
+        <h2><i class="icon-music icon-large"></i> Dancer inside</h2>
+        <a href="http://perldancer.org" target="_blank">What more could you ask for?
+        <br/>
+        <img src="images/dancer_star.png">
+        </a>
+    </div>
 
-	<div class="span4">
-		<h2><i class="icon-gift icon-large"></i> Working Examples</h2>
-		Don't re-invernt the wheel! Here are ready-to-use examples, just copy,paste,adapt to code &amp; templates to your needs:
-		<ul>
-			<li><a href="[% request.uri_for("/simple_form")%]">Simple &lt;FORM&gt; processing</a></li>
-			<li><a href="[% request.uri_for("/navbar_login")%]">Login Form and NavBar Dropdown Menu</a></li>
-			<li><a href="[% request.uri_for("/tabs")%]">Tabs/Pills</a></li>
-			<li><a href="[% request.uri_for("/photo_carousel")%]">Photo Gallery Carousel</a></li>
-			<li><a href="[% request.uri_for("/photo_grid")%]">Photo Gallery Grid / Thumbnails</a></li>
-			<li><a href="[% request.uri_for("/markdown")%]">Markdown Text Rendering</a></li>
-			<li><a href="[% request.uri_for("/template_plugins")%]">Template::Toolkit plugins</a></li>
-			<li><a href="[% request.uri_for("/error_handling")%]">Dancer's Error Handling</a></li>
-		</ul>
-	</div>
+    <div class="span4">
+        <h2><i class="icon-gift icon-large"></i> Working Examples</h2>
+        Don't re-invernt the wheel! Here are ready-to-use examples, just copy,paste,adapt to code &amp; templates to your needs:
+        <ul>
+            <li><a href="[% request.uri_for("/simple_form")%]">Simple &lt;FORM&gt; processing</a></li>
+            <li><a href="[% request.uri_for("/navbar_login")%]">Login Form and NavBar Dropdown Menu</a></li>
+            <li><a href="[% request.uri_for("/tabs")%]">Tabs/Pills</a></li>
+            <li><a href="[% request.uri_for("/photo_carousel")%]">Photo Gallery Carousel</a></li>
+            <li><a href="[% request.uri_for("/photo_grid")%]">Photo Gallery Grid / Thumbnails</a></li>
+            <li><a href="[% request.uri_for("/markdown")%]">Markdown Text Rendering</a></li>
+            <li><a href="[% request.uri_for("/template_plugins")%]">Template::Toolkit plugins</a></li>
+            <li><a href="[% request.uri_for("/error_handling")%]">Dancer's Error Handling</a></li>
+        </ul>
+    </div>
 </div>
 
 <br/>
@@ -102,27 +156,27 @@
 
 
 <div class="page-header">
-	<div class="row">
-		<div class="span12">
-			<h1>Technical Stuff</h1>
-		</div>
-	</div>
+    <div class="row">
+        <div class="span12">
+            <h1>Technical Stuff</h1>
+        </div>
+    </div>
 </div>
 
 
 <div class="row">
-	<div class="span12">
-		<h2><i class="icon-share-alt icon-large"></i> Start here</h2>
+    <div class="span12">
+        <h2><i class="icon-share-alt icon-large"></i> Start here</h2>
 
-		<ol>
-			<li><a href="https://github.com/agordon/dancer_bootstrap_fontawesome_template/zipball/master">Download</a> the latest template files</li>
-			<li>Extract the files</li>
-			<li>run <code>update_bootstrap</code> and <code>update_fontawesome</code> to download the latest versions</li>
-			<li>run <code>update_app_name</code> to set your application name (instead of the hardcoded <b>dancer_bootstrap_fontawesome_template</b>.</li>
-			<li>run <code>./bin/app.pl</code> (in the usual Dancer way)</li>
-		</ol>
+        <ol>
+            <li><a href="https://github.com/agordon/dancer_bootstrap_fontawesome_template/zipball/master">Download</a> the latest template files</li>
+            <li>Extract the files</li>
+            <li>run <code>update_bootstrap</code> and <code>update_fontawesome</code> to download the latest versions</li>
+            <li>run <code>update_app_name</code> to set your application name (instead of the hardcoded <b>dancer_bootstrap_fontawesome_template</b>.</li>
+            <li>run <code>./bin/app.pl</code> (in the usual Dancer way)</li>
+        </ol>
 
-		<pre>
+        <pre>
 $ wget -O dancer.zip https://github.com/agordon/dancer_bootstrap_fontawesome_template/zipball/master
 $ unzip dancer.zip
 $ cd agordon-dancer_bootstrap_fontawesome_template-*
@@ -131,8 +185,8 @@ $ ./bin/update_fontawesome
 $ ./bin/update_app_name MyNewApp  # or any name you like
 $ ./bin/app.pl
 ## and visit http://localhost:3000 to dance
-		</pre>
-	</div>
+        </pre>
+    </div>
 </div>
 
 <br/>
@@ -140,38 +194,38 @@ $ ./bin/app.pl
 
 
 <div class="row">
-	<div class="span9">
-		<h2><i class="icon-question-sign icon-large"></i> How to</h2>
-		<ul>
-			<li>Learn about Dancer: <a target="_blank" href="http://perldancer.org">http://perldancer.org</a></li>
-			<li>Learn about Bootstrap's CSS: <a target="_blank" href="http://twitter.github.com/bootstrap/index.html">http://twitter.github.com/bootstrap/index.html</a></li>
-			<li>Learn about Font-Awesome: <a target="_blank" href="http://fortawesome.github.com/Font-Awesome">http://fortawesome.github.com/Font-Awesome</a></li>
+    <div class="span9">
+        <h2><i class="icon-question-sign icon-large"></i> How to</h2>
+        <ul>
+            <li>Learn about Dancer: <a target="_blank" href="http://perldancer.org">http://perldancer.org</a></li>
+            <li>Learn about Bootstrap's CSS: <a target="_blank" href="http://twitter.github.com/bootstrap/index.html">http://twitter.github.com/bootstrap/index.html</a></li>
+            <li>Learn about Font-Awesome: <a target="_blank" href="http://fortawesome.github.com/Font-Awesome">http://fortawesome.github.com/Font-Awesome</a></li>
 
-			<li>Override Bootstrap's CSS settings: change <code>&lt;dancer_directory&gt;/public/css/style.css</code> - it will be loaded <b>after</b> Bootstrap's CSS.</li>
-			<li>Tweak the CSS/JS loading: see <code>&lt;dancer_directory&gt;/views/layout/main.tt</code></li>
-			<li>Add Javascript code to be loaded when the document is ready: see <code>&lt;dancer_directory&gt;/views/layout/main.tt</code> (the <code>&lt;javascript&gt;</code> at the bottom).</li>
-			<li>Update bootstrap: run <code>&lt;dancer_directory&gt;/bin/update_bootstrap</code></li>
-			<li>Update Font-Awesome: run <code>&lt;dancer_directory&gt;/bin/update_fontawesome</code></li>
-			<li>Update JQuery: You'll have to do it manually. See the <a href="https://github.com/agordon/dancer_bootstrap_fontawesome_template/blob/master/README" target="_blank">README</a> file.</li>
-		</ul>
+            <li>Override Bootstrap's CSS settings: change <code>&lt;dancer_directory&gt;/public/css/style.css</code> - it will be loaded <b>after</b> Bootstrap's CSS.</li>
+            <li>Tweak the CSS/JS loading: see <code>&lt;dancer_directory&gt;/views/layout/main.tt</code></li>
+            <li>Add Javascript code to be loaded when the document is ready: see <code>&lt;dancer_directory&gt;/views/layout/main.tt</code> (the <code>&lt;javascript&gt;</code> at the bottom).</li>
+            <li>Update bootstrap: run <code>&lt;dancer_directory&gt;/bin/update_bootstrap</code></li>
+            <li>Update Font-Awesome: run <code>&lt;dancer_directory&gt;/bin/update_fontawesome</code></li>
+            <li>Update JQuery: You'll have to do it manually. See the <a href="https://github.com/agordon/dancer_bootstrap_fontawesome_template/blob/master/README" target="_blank">README</a> file.</li>
+        </ul>
 
-	</div>
+    </div>
 
-	<div class="span3">
-		<h2><i class="icon-road icon-large"></i> Deploy</h2>
-		Try the Dancing <a href="[% request.uri_base %]/deploy">Deployment wizard</a>.
+    <div class="span3">
+        <h2><i class="icon-road icon-large"></i> Deploy</h2>
+        Try the Dancing <a href="[% request.uri_base %]/deploy">Deployment wizard</a>.
 
-		<br/>
-		<br/>
-		<h2><i class="icon-github-sign icon-large"></i> Fork me</h2>
-		<a target="_blank" href="https://github.com/agordon/dancer_bootstrap_fontawesome_template">GitHub repository</a>
+        <br/>
+        <br/>
+        <h2><i class="icon-github-sign icon-large"></i> Fork me</h2>
+        <a target="_blank" href="https://github.com/agordon/dancer_bootstrap_fontawesome_template">GitHub repository</a>
 
-		<br/>
-		<br/>
+        <br/>
+        <br/>
 
-		<h2><i class="icon-envelope icon-large"></i> Email me</h2>
-		<a target="_blank" href="mailto: gordon at cshl dot edu">gordon at cshl dot edu</a>
-	</div>
+        <h2><i class="icon-envelope icon-large"></i> Email me</h2>
+        <a target="_blank" href="mailto: gordon at cshl dot edu">gordon at cshl dot edu</a>
+    </div>
 
 </div>
 

@@ -19,3 +19,4 @@ tmp*
 vim.sh
 temp*
 errors.err
+sites.db
